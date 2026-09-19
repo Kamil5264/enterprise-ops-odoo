@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<menuitem id="menu_enterprise_ops_root"
+         name="Enterprise Operation"
+         sequence="10"
+  />
+
+  <menuitem id="menu_enterprise_ops_requests"
+            name="Requests"
+            parent="menu_enterprise_ops_root"
+            sequence="10"
+  />
+
+  <menuitem id="menu_enterprise_ops_config"
+            name="Configuration"
+            parent="menu_enterprise_ops_root"
+            sequence="90"
+ />
+
+
+</odoo>
