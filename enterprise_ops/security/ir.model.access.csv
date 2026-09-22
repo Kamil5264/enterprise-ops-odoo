@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_operating_unit_admin,enterprise.ops.operating.unit.admin,model_enterprise_ops_operating_unit,base.group_system,1,1,1,1
+access_department_admin,enterprise.ops.department.admin,model_enterprise_ops_department,base.group_system,1,1,1,1
