@@ -5,6 +5,14 @@
          sequence="10"
   />
 
+  <menuitem
+        id="menu_enterprise_ops_requests"
+        name="Requests"
+        parent="menu_enterprise_ops_root"
+        action="action_enterprise_ops_request"
+        sequence="10"
+    />
+
   <menuitem id="menu_enterprise_ops_requests"
             name="Requests"
             parent="menu_enterprise_ops_root"
