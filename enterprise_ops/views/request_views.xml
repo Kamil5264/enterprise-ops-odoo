@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ===================== List View ===================== -->
+    <record id="view_request_list" model="ir.ui.view">
+        <field name="name">enterprise.ops.request.list</field>
+        <field name="model">enterprise.ops.request</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="state == 'rejected'"
+                  decoration-muted="state == 'cancelled'"
+                  decoration-success="state == 'done'">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="request_date"/>
+                <field name="priority" widget="priority"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state == 'submitted'"
+                       decoration-success="state == 'approved'"
+                       decoration-danger="state == 'rejected'"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ===================== Form View ===================== -->
+    <record id="view_request_form" model="ir.ui.view">
+        <field name="name">enterprise.ops.request.form</field>
+        <field name="model">enterprise.ops.request</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,submitted,approved,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="department_id"
+                                   domain="[('company_id', '=', company_id)]"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group>
+                            <field name="priority" widget="priority"/>
+                            <field name="request_date"/>
+                        </group>
+                    </group>
+                    <group string="Reason">
+                        <field name="reason" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ===================== Search View ===================== -->
+    <record id="view_request_search" model="ir.ui.view">
+        <field name="name">enterprise.ops.request.search</field>
+        <field name="model">enterprise.ops.request</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <filter string="My Requests" name="my_requests"
+                        domain="[('employee_id', '=', uid)]"/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <separator/>
+                <group>
+                    <filter string="Department" name="group_department"
+                            context="{'group_by': 'department_id'}"/>
+                    <filter string="Status" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Company" name="group_company"
+                            context="{'group_by': 'company_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ===================== Action ===================== -->
+    <record id="action_enterprise_ops_request" model="ir.actions.act_window">
+        <field name="name">Requests</field>
+        <field name="res_model">enterprise.ops.request</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_request_search"/>
+        <field name="context">{'search_default_my_requests': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first operational request
+            </p>
+        </field>
+    </record>
+
+</odoo>

@@ -35,6 +35,7 @@ Odoo application covering:
         'security/ir.model.access.csv',
         'views/menu.xml',
         'views/master_data_views.xml',
+        'views/request_views.xml',
     ],
 
     # Behaviour flags
