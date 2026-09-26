@@ -53,6 +53,21 @@
                     <group string="Reason">
                         <field name="reason" nolabel="1"/>
                     </group>
+                    <notebook>
+                      <page string = "Lines" name = "lines">
+                        <field name = "line_ids"> 
+                           <list editable = "bottom"> 
+                           <field name = "sequence" widget = "handle"/> 
+                           <field name = "product_name"/>
+                           <field name = "quantity"/>
+                           <field name = "estimated_unit_price"/>
+                           <field name = "notes"/>
+                           <field name = "currency_id" column_visible = "1"/>
+                           <field name = "subtotal" sum = "Total"/>
+                           </list>
+                      </field>
+                       </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>

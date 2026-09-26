@@ -87,3 +87,10 @@ class OperationalRequest(models.Model):
     )
 
     active = fields.Boolean(string='Active', default=True)
+
+    line_ids = fields.One2many(
+        comodel_name='enterprise.ops.request.line',
+        inverse_name='request_id',
+        string='Request Lines',
+        copy=True,
+    )
