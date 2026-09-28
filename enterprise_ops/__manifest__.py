@@ -31,12 +31,12 @@ Odoo application covering:
     ],
 
     # Data files loaded on install/update
-    "data": [        
-        'security/ir.model.access.csv',
-        'views/menu.xml',
-        'views/master_data_views.xml',
-        'views/request_views.xml',
-    ],
+    "data": [
+    'security/ir.model.access.csv',
+    'views/request_views.xml',
+    'views/menu.xml',
+    'views/master_data_views.xml',
+],
 
     # Behaviour flags
     "installable": True,

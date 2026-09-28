@@ -68,6 +68,12 @@
                       </field>
                        </page>
                     </notebook>
+                                       <group name="totals" class="oe_right" col="2">
+                        <field name="currency_id" invisible="1"/>
+                        <field name="amount_lines_total" readonly="1"/>
+                        <field name="amount_additional_charges"/>
+                        <field name="amount_total"/>
+                    </group>
                 </sheet>
             </form>
         </field>
