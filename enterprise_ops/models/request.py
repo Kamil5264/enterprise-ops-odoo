@@ -94,3 +94,53 @@ class OperationalRequest(models.Model):
         string='Request Lines',
         copy=True,
     )
+
+    currency_id = fields.Many2one(
+        string = 'Currency',
+        related = 'company_id.currency_id',
+        store = True,
+        readonly =True
+    )
+
+        # ------------------------------------------------------------------
+    # Totals
+    # ------------------------------------------------------------------
+    amount_lines_total = fields.Monetary(
+        string='Lines Total',
+        currency_field='currency_id',
+        compute='_compute_amounts',
+        store=True,
+        readonly=True,
+    )
+    amount_additional_charges = fields.Monetary(
+        string='Additional Charges',
+        currency_field='currency_id',
+        default=0.0,
+    )
+    amount_total = fields.Monetary(
+        string='Total',
+        currency_field='currency_id',
+        compute='_compute_amounts',
+        inverse='_inverse_amount_total',
+        store=True,
+    )
+
+   
+
+    @api.depends('line_ids.subtotal', 'amount_additional_charges')
+    def _compute_amounts(self):
+        for request in self:
+            request.amount_lines_total = sum(request.line_ids.mapped('subtotal'))
+            request.amount_total = request.amount_lines_total + request.amount_additional_charges
+
+    def _inverse_amount_total(self):
+        for request in self:
+            request.amount_additional_charges = request.amount_total - request.amount_lines_total
+
+    
+
+    
+
+    
+
+    
