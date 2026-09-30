@@ -1,4 +1,6 @@
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError, ValidationError
+
 
 
 class OperationalRequest(models.Model):
@@ -136,6 +138,34 @@ class OperationalRequest(models.Model):
     def _inverse_amount_total(self):
         for request in self:
             request.amount_additional_charges = request.amount_total - request.amount_lines_total
+
+    @api.onchange('company_id')
+    def _onchange_company_id(self):
+        if(self.department_id and self.department_id.company_id != self.company_id):
+            self.department_id = False
+
+    @api.constrains('reason')
+    def _check_reason_not_blank(self):
+        for request in self:
+            if not request.reason or not request.reason.strip():
+                raise ValidationError(_("Reason cannot be empty or contain only whitespace"))
+
+
+    @api.constrains('department_id', 'company_id')
+    def _check_department_company_match(self):
+        for request in self:
+            if (request.department_id
+                    and request.department_id.company_id != request.company_id):
+                raise ValidationError(_(
+                    "Department '%(dept)s' belongs to company '%(dept_company)s', "
+                    "which does not match this request's company '%(company)s'.",
+                    dept=request.department_id.name,
+                    dept_company=request.department_id.company_id.name,
+                    company=request.company_id.name,
+                ))
+                    
+        
+
 
     
 
