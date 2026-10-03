@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_request_search" model="ir.ui.view">
+        <field name="name">enterprise.ops.request.search</field>
+        <field name="model">enterprise.ops.request</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="department_id"/>
+
+                <filter string="My Requests" name="my_requests"
+                        domain="[('employee_id', '=', uid)]"/>
+                <separator/>
+                <filter string="Draft" name="filter_draft"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter string="To Approve" name="filter_to_approve"
+                        domain="[('state', '=', 'submitted')]"/>
+                <filter string="In Procurement" name="filter_procurement"
+                        domain="[('state', '=', 'procurement')]"/>
+                <separator/>
+                <filter string="Urgent" name="filter_urgent"
+                        domain="[('priority', '=', '2')]"/>
+
+                <group>
+                    <filter string="Department" name="group_department"
+                            context="{'group_by': 'department_id'}"/>
+                    <filter string="Status" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Priority" name="group_priority"
+                            context="{'group_by': 'priority'}"/>
+                    <filter string="Company" name="group_company"
+                            context="{'group_by': 'company_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+</odoo>
