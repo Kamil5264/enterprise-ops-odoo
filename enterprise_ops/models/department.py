@@ -2,6 +2,7 @@ from odoo import models, fields
 
 class  Department(models.Model):
     _name = 'enterprise.ops.department'
+    _inherit = ['enterprise.ops.company.owned.mixin']
     _description = 'Department'
     _order = 'name'
 
@@ -11,15 +12,7 @@ class  Department(models.Model):
         comodel_name ='res.users',
         string = 'Manager'
     )
-    company_id = fields.Many2one(
-        comodel_name='res.company',
-        string =  'company',
-        required = True,
-        default=lambda self: self.env.company,
-
-
-    )
-    active = fields.Boolean(string = 'Active', default = True)
+    
 
     _sql_constraints = [
         (

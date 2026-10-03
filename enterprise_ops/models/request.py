@@ -5,6 +5,7 @@ from odoo.exceptions import UserError, ValidationError
 
 class OperationalRequest(models.Model):
     _name = 'enterprise.ops.request'
+    _inherit = ['enterprise.ops.company.owned.mixin']
     _description = 'Operational Request'
     _order = 'id desc'
     _rec_name = 'name'
@@ -39,13 +40,7 @@ class OperationalRequest(models.Model):
         required=True,
         index=True,
     )
-    company_id = fields.Many2one(
-        comodel_name='res.company',
-        string='Company',
-        required=True,
-        index=True,
-        default=lambda self: self.env.company,
-    )
+   
 
     # ------------------------------------------------------------------
     # Request details
@@ -88,8 +83,7 @@ class OperationalRequest(models.Model):
         index=True,
     )
 
-    active = fields.Boolean(string='Active', default=True)
-
+ 
     line_ids = fields.One2many(
         comodel_name='enterprise.ops.request.line',
         inverse_name='request_id',
