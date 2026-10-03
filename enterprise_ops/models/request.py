@@ -163,6 +163,66 @@ class OperationalRequest(models.Model):
                     dept_company=request.department_id.company_id.name,
                     company=request.company_id.name,
                 ))
+
+
+    _TRANSITION = {
+        'submitted':{'from':('draft',)},
+        'approved':{'from':('submitted',)},
+        'rejected':{'from':('submitted',)},
+        'procurement':{'from':('approved',)},
+        'done':{'from':('procurement',)},
+        'cancelled':{'from':('draft','submitted','approved','procurement')},
+        'draft':{'from':('cancelled','rejected')}
+
+
+    }
+
+    def _apply_transition(self,target_state):
+        allowed_from = self._TRANSITION[target_state]['from']
+        invalid = self.filtered(lambda r:r.state not in allowed_from)
+        if invalid:
+            raise UserError(_(
+                "Cannot move %(names)s to '%(target)s'. "
+                "Current state does not allow this transition.",
+                names=', '.join(invalid.mapped('display_name')),
+                target=target_state,
+            ))
+
+        self.write({'state':target_state})
+
+
+    def action_submit(self):
+        empty = self.filtered(lambda r: not r.line_ids)
+        if empty:
+            raise UserError(_(
+                "Cannot submit %(names)s: at least one line is required.",
+                names=', '.join(empty.mapped('display_name')),
+            ))
+        self._apply_transition('submitted')
+
+    def action_approve(self):
+        self._apply_transition('approved')
+
+    def action_reject(self):
+        self._apply_transition('rejected')
+
+    def action_send_to_procurement(self):
+        self._apply_transition('procurement')
+
+    def action_done(self):
+        self._apply_transition('done')
+
+    def action_cancel(self):
+        self._apply_transition('cancelled')
+
+    def action_reset_draft(self):
+        self._apply_transition('draft')
+
+    
+
+
+
+
                     
         
 
