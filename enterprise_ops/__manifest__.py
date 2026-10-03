@@ -33,6 +33,7 @@ Odoo application covering:
     # Data files loaded on install/update
     "data": [
     'security/ir.model.access.csv',
+    'views/request_search.xml',
     'views/request_views.xml',
     'views/menu.xml',
     'views/master_data_views.xml',
