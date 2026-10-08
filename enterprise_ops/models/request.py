@@ -20,9 +20,7 @@ class OperationalRequest(models.Model):
         readonly=True,
         default=lambda self: _('New'),
     )
-    # Real sequence-based numbering (REQ/2026/00001 etc.) comes in T14.
-    # For now, default is the literal string "New" so the record is
-    # still creatable/savable without a sequence dependency.
+    
 
     # ------------------------------------------------------------------
     # Who / Where
@@ -167,6 +165,24 @@ class OperationalRequest(models.Model):
                     "because you don't have access to that company.",
                     company=request.company_id.name,
                 ))
+
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        sequence = self.env['ir.sequence']
+        for vals in vals_list:
+            vals.pop('amount_total', None)
+            company_id = vals.get('company_id') or self.env.company.id
+            reference = sequence.with_company(company_id).next_by_code(
+                'enterprise.ops.request'
+            )
+            if not reference:
+                raise UserError(_(
+                    "The request sequence 'enterprise.ops.request' is missing. "
+                    "Please contact your administrator."
+                ))
+            vals['name'] = reference
+        return super().create(vals_list)
 
 
     _TRANSITION = {
