@@ -158,6 +158,16 @@ class OperationalRequest(models.Model):
                     company=request.company_id.name,
                 ))
 
+    @api.constrains('company_id')
+    def _check_company_allowed_for_user(self):
+        for request in self:
+            if request.company_id not in self.env.user.company_ids:
+                raise ValidationError(_(
+                    "You cannot set this request's company to '%(company)s' "
+                    "because you don't have access to that company.",
+                    company=request.company_id.name,
+                ))
+
 
     _TRANSITION = {
         'submitted':{'from':('draft',)},
