@@ -99,4 +99,32 @@
         <field name="groups" eval="[(4, ref('group_admin'))]"/>
     </record>
 
+
+
+        <!-- ===================== Multi-Company Isolation (Global) ===================== -->
+
+    <record id="rule_operating_unit_multicompany" model="ir.rule">
+        <field name="name">Operating Unit: multi-company isolation</field>
+        <field name="model_id" ref="model_enterprise_ops_operating_unit"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_department_multicompany" model="ir.rule">
+        <field name="name">Department: multi-company isolation</field>
+        <field name="model_id" ref="model_enterprise_ops_department"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_request_multicompany" model="ir.rule">
+        <field name="name">Request: multi-company isolation</field>
+        <field name="model_id" ref="model_enterprise_ops_request"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_request_line_multicompany" model="ir.rule">
+        <field name="name">Request Line: multi-company isolation</field>
+        <field name="model_id" ref="model_enterprise_ops_request_line"/>
+        <field name="domain_force">[('request_id.company_id', 'in', company_ids)]</field>
+    </record>
+
 </odoo>
