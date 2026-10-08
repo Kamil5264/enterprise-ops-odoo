@@ -57,4 +57,46 @@
         <field name="user_ids" eval="[(4, ref('base.user_admin'))]"/>
     </record>
 
+    <record id = "rule_request_employee" model = "ir.rule">
+         <field name = "name">Request:Employees sees own request only</field>
+         <field name = "model_id" ref = "model_enterprise_ops_request"/>
+         <field name = "domain_force">[('employee_id', '=', user.id)]</field>
+         <field name = "groups" eval = "[(4,ref('group_employee'))]"/>
+  </record>
+
+  <record id="rule_request_manager" model="ir.rule">
+        <field name="name">Request: Manager sees own + managed-department requests</field>
+        <field name="model_id" ref="model_enterprise_ops_request"/>
+        <field name="domain_force">['|', ('employee_id', '=', user.id), ('department_id.manager_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_manager'))]"/>
+    </record>
+
+    <record id="rule_request_admin" model="ir.rule">
+        <field name="name">Request: Administrator sees all</field>
+        <field name="model_id" ref="model_enterprise_ops_request"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_admin'))]"/>
+    </record>
+
+    <record id="rule_request_line_employee" model="ir.rule">
+        <field name="name">Request Line: Employee sees own request's lines only</field>
+        <field name="model_id" ref="model_enterprise_ops_request_line"/>
+        <field name="domain_force">[('request_id.employee_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_employee'))]"/>
+    </record>
+
+    <record id="rule_request_line_manager" model="ir.rule">
+        <field name="name">Request Line: Manager sees own + managed-department lines</field>
+        <field name="model_id" ref="model_enterprise_ops_request_line"/>
+        <field name="domain_force">['|', ('request_id.employee_id', '=', user.id), ('request_id.department_id.manager_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_manager'))]"/>
+    </record>
+
+    <record id="rule_request_line_admin" model="ir.rule">
+        <field name="name">Request Line: Administrator sees all</field>
+        <field name="model_id" ref="model_enterprise_ops_request_line"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_admin'))]"/>
+    </record>
+
 </odoo>
