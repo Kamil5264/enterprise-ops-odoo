@@ -36,10 +36,14 @@
                 <header>
                     <button name="action_submit" type="object" string="Submit"
                             class="btn-primary" invisible="state != 'draft'"/>
-                    <button name="action_approve" type="object" string="Approve"
-                            class="btn-primary" invisible="state != 'submitted'"/>
-                    <button name="action_reject" type="object" string="Reject"
-                            invisible="state != 'submitted'"/>
+                    <button name="action_open_approve_wizard" type="object"
+                            string="Approve" class="btn-primary"
+                            invisible="state != 'submitted'"
+                            groups="enterprise_ops.group_manager,enterprise_ops.group_admin"/>
+                    <button name="action_open_reject_wizard" type="object"
+                            string="Reject"
+                            invisible="state != 'submitted'"
+                            groups="enterprise_ops.group_manager,enterprise_ops.group_admin"/>
                     <button name="action_send_to_procurement" type="object"
                             string="Send to Procurement" class="btn-primary"
                             invisible="state != 'approved'"/>
@@ -71,6 +75,12 @@
                     </group>
                     <group string="Reason">
                         <field name="reason" nolabel="1"/>
+                    </group>
+                    <group string="Decision" invisible="not decision_user_id">
+                        <field name="decision_user_id"/>
+                        <field name="decision_date"/>
+                        <field name="rejection_reason"
+                               invisible="not rejection_reason"/>
                     </group>
                     <notebook>
                       <page string = "Lines" name = "lines">

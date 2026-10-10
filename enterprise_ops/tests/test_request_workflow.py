@@ -44,7 +44,7 @@ class TestRequestWorkflow(TransactionCase):
     def test_reject_and_reset_path(self):
         request = self._create_request_with_line()
         request.action_submit()
-        request.action_reject()
+        request.action_reject(reason='Over budget')
         self.assertEqual(request.state, 'rejected')
 
         request.action_reset_draft()

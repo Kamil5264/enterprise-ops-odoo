@@ -19,3 +19,5 @@ access_request_line_manager,enterprise.ops.request.line.manager,model_enterprise
 access_request_line_procurement,enterprise.ops.request.line.procurement,model_enterprise_ops_request_line,group_procurement,1,1,0,0
 access_request_line_finance,enterprise.ops.request.line.finance,model_enterprise_ops_request_line,group_finance,1,0,0,0
 access_request_line_admin,enterprise.ops.request.line.admin,model_enterprise_ops_request_line,group_admin,1,1,1,1
+access_request_approval_manager,enterprise.ops.request.approval.manager,model_enterprise_ops_request_approval,group_manager,1,1,1,1
+access_request_approval_admin,enterprise.ops.request.approval.admin,model_enterprise_ops_request_approval,group_admin,1,1,1,1
