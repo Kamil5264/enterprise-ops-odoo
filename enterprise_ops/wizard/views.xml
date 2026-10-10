@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+   <record id = "view_request_approval_form" model = "ir.ui.view">
+       <field name = "name">enterprise.ops.request.approval.form</field>
+       <field name = "model">enterprise.ops.request.approval</field>
+       <field name = "arch" type = "xml">
+           <form string = "Request Decision">
+              <group>
+                 <field name = "request_ids" widget = "many2many_tags"
+                  readonly = "1" force_save = "1"/>
+                  <field name = "decision" readonly = "1" force_save = "1"/>
+                  <field name = "rejection_reason"
+                         invisible = "decision!='reject'"
+                         required = "decision =='reject'"
+                         placeholder = "Explain why this request is rejected..."
+                  />
+
+              </group>
+              <footer>
+                 <button name = "action_confirm" type = "object" string ="Confirm"
+                         class = "btn-primary" data-hotkey = "q"/>
+                 <button string = "Cancel" class = "btn-secondary" special = "cancel" data-hotkey = "x" />
+              </footer>
+           </form>
+       
+       </field>
+         
+
+   </record>
+
+</odoo>

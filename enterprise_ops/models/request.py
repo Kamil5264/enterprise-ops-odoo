@@ -1,5 +1,5 @@
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import UserError, ValidationError,AccessError
 
 
 
@@ -79,6 +79,23 @@ class OperationalRequest(models.Model):
         required=True,
         copy=False,
         index=True,
+    )
+
+    decision_user_id = fields.Many2one(
+        comodel_name = 'res.users',
+        string = 'Decided By',
+        readonly = True,
+        copy = False
+    )
+    decision_date = fields.Datetime(
+        string='Decision Date',
+        readonly=True,
+        copy=False,
+    )
+    rejection_reason = fields.Text(
+        string='Rejection Reason',
+        readonly=True,
+        copy=False,
     )
 
  
@@ -197,7 +214,7 @@ class OperationalRequest(models.Model):
 
     }
 
-    def _apply_transition(self,target_state):
+    def _apply_transition(self,target_state, extra_vals = None):
         allowed_from = self._TRANSITION[target_state]['from']
         invalid = self.filtered(lambda r:r.state not in allowed_from)
         if invalid:
@@ -208,7 +225,7 @@ class OperationalRequest(models.Model):
                 target=target_state,
             ))
 
-        self.write({'state':target_state})
+        self.write({'state':target_state,**(extra_vals or {})})
 
 
     def action_submit(self):
@@ -220,11 +237,60 @@ class OperationalRequest(models.Model):
             ))
         self._apply_transition('submitted')
 
-    def action_approve(self):
-        self._apply_transition('approved')
+    def _check_can_decide(self):
+        if self.env.su:
+            return
+        user = self.env.user
+        # group_admin implies group_manager, but both are checked
+        # explicitly so this does not depend on implied-group expansion.
+        if not (user.has_group('enterprise_ops.group_manager')
+                or user.has_group('enterprise_ops.group_admin')):
+            raise AccessError(_("Only managers can approve or reject requests."))
+        own = self.filtered(lambda r: r.employee_id == user)
+        if own:
+            raise UserError(_(
+                "You cannot approve or reject your own request: %(names)s.",
+                names=', '.join(own.mapped('display_name')),
+            ))
 
-    def action_reject(self):
-        self._apply_transition('rejected')
+    def action_approve(self):
+        self._check_can_decide()
+        self._apply_transition('approved', {
+            'decision_user_id': self.env.user.id,
+            'decision_date': fields.Datetime.now(),
+            'rejection_reason': False,
+        })
+
+    def action_reject(self, reason=None):
+        self._check_can_decide()
+        reason = (reason or '').strip()
+        if not reason:
+            raise UserError(_("A rejection reason is required."))
+        self._apply_transition('rejected', {
+            'decision_user_id': self.env.user.id,
+            'decision_date': fields.Datetime.now(),
+            'rejection_reason': reason,
+        })
+
+    def _open_approval_wizard(self, decision):
+        self._check_can_decide()  # fail early instead of showing a useless modal
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Request Decision'),
+            'res_model': 'enterprise.ops.request.approval',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_request_ids': self.ids,
+                'default_decision': decision,
+            },
+        }
+
+    def action_open_approve_wizard(self):
+        return self._open_approval_wizard('approve')
+
+    def action_open_reject_wizard(self):
+        return self._open_approval_wizard('reject')
 
     def action_send_to_procurement(self):
         self._apply_transition('procurement')
