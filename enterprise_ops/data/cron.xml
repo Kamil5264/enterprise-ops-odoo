@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <record id="mail_activity_type_approval_reminder"
+            model="mail.activity.type">
+        <field name="name">Approval Reminder</field>
+        <field name="summary">Request waiting for your approval</field>
+        <field name="icon">fa-bell</field>
+    </record>
+
+    <record id="ir_cron_remind_stale_approvals" model="ir.cron">
+        <field name="name">Enterprise Ops: Remind Stale Approvals</field>
+        <field name="model_id" ref="model_enterprise_ops_request"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_remind_stale_approvals()</field>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+
+</odoo>
