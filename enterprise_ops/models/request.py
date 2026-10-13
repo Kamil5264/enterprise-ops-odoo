@@ -1,11 +1,19 @@
+import logging
+from datetime import timedelta
+
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError,AccessError
+
+_logger = logging.getLogger(__name__)
 
 
 
 class OperationalRequest(models.Model):
     _name = 'enterprise.ops.request'
-    _inherit = ['enterprise.ops.company.owned.mixin']
+    _inherit = ['enterprise.ops.company.owned.mixin',
+                'mail.thread',
+                'mail.activity.mixin'
+     ]
     _description = 'Operational Request'
     _order = 'id desc'
     _rec_name = 'name'
@@ -96,6 +104,17 @@ class OperationalRequest(models.Model):
         string='Rejection Reason',
         readonly=True,
         copy=False,
+    )
+
+    submitted_date = fields.Datetime(
+        string = 'Submitted On',
+        readonly = True,
+        copy = False
+    )
+    last_reminder_date = fields.Datetime(
+        string = 'Last Reminder',
+        readonly = True,
+        copy = False
     )
 
  
@@ -235,7 +254,10 @@ class OperationalRequest(models.Model):
                 "Cannot submit %(names)s: at least one line is required.",
                 names=', '.join(empty.mapped('display_name')),
             ))
-        self._apply_transition('submitted')
+        self._apply_transition('submitted',{
+            'submitted_date':fields.Datetime.now(),
+            'last_reminder_date':False
+        })
 
     def _check_can_decide(self):
         if self.env.su:
@@ -303,6 +325,75 @@ class OperationalRequest(models.Model):
 
     def action_reset_draft(self):
         self._apply_transition('draft')
+
+    _REMINDER_AFTER_DAYS = 3    
+    _REMINDER_REPEAT_DAYS = 3 
+
+
+    @api.model
+    def _cron_remind_stale_approvals(self):
+        now = fields.Datetime.now()
+        stale_before = now - timedelta(days=self._REMINDER_AFTER_DAYS)
+        repeat_before = now - timedelta(days=self._REMINDER_REPEAT_DAYS)
+        activity_type = self.env.ref(
+            'enterprise_ops.mail_activity_type_approval_reminder'
+        )
+        requests = self.search([
+            ('state', '=', 'submitted'),
+            ('submitted_date', '<=', stale_before),
+            '|',
+            ('last_reminder_date', '=', False),
+            ('last_reminder_date', '<=', repeat_before),
+        ])
+        for request in requests:
+            try:
+                # Savepoint: one failing request must not abort the others.
+                with self.env.cr.savepoint():
+                    request._send_approval_reminder(activity_type)
+            except (UserError, AccessError):
+                _logger.warning(
+                    "Could not create approval reminder for %s",
+                    request.name, exc_info=True,
+                )
+
+    def _send_approval_reminder(self, activity_type):
+        """Create at most one open reminder activity for the department
+        manager. Returns True only if a new activity was created."""
+        self.ensure_one()
+        manager = self.department_id.manager_id
+        if not manager:
+            _logger.warning(
+                "Request %s is stale but department '%s' has no manager.",
+                self.name, self.department_id.name,
+            )
+            return False
+        if manager == self.employee_id:
+            # Managers cannot approve their own request (T15): reminding
+            # them would be pointless.
+            _logger.warning(
+                "Request %s is stale but its department manager is the "
+                "requester; skipping reminder.", self.name,
+            )
+            return False
+        if self.activity_ids.filtered(
+            lambda a: a.activity_type_id == activity_type
+        ):
+            return False  # an open reminder already exists: no spam
+        self.activity_schedule(
+            act_type_xmlid='enterprise_ops.mail_activity_type_approval_reminder',
+            user_id=manager.id,
+            date_deadline=fields.Date.context_today(self),
+            summary=_("Approval pending: %(name)s", name=self.name),
+            note=_(
+                "Request %(name)s from %(employee)s has been waiting for "
+                "approval since %(date)s.",
+                name=self.name,
+                employee=self.employee_id.name,
+                date=self.submitted_date,
+            ),
+        )
+        self.last_reminder_date = fields.Datetime.now()
+        return True
 
     
 

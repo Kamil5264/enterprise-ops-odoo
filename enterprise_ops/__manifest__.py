@@ -27,7 +27,7 @@ Odoo application covering:
 
     # Dependencies
     "depends": [
-        "base",
+        "base","mail"
     ],
 
     # Data files loaded on install/update
@@ -35,6 +35,7 @@ Odoo application covering:
     'security/security.xml',
     'security/ir.model.access.csv',
     'data/sequence.xml',
+    'data/cron.xml',
     'views/request_search.xml',
     'views/request_views.xml',
     'wizard/views.xml',
