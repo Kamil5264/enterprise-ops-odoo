@@ -36,6 +36,7 @@ Odoo application covering:
     'security/ir.model.access.csv',
     'data/sequence.xml',
     'data/cron.xml',
+    'data/server_actions.xml',
     'views/request_search.xml',
     'views/request_views.xml',
     'wizard/views.xml',
