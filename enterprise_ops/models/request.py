@@ -1,6 +1,8 @@
 import logging
 from datetime import timedelta
 
+from markupsafe import Markup
+
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError,AccessError
 
@@ -45,6 +47,8 @@ class OperationalRequest(models.Model):
         string='Department',
         required=True,
         index=True,
+        tracking=True,
+
     )
    
 
@@ -60,6 +64,7 @@ class OperationalRequest(models.Model):
         string='Priority',
         default='0',
         required=True,
+        tracking=True,
     )
     request_date = fields.Date(
         string='Request Date',
@@ -87,6 +92,7 @@ class OperationalRequest(models.Model):
         required=True,
         copy=False,
         index=True,
+        tracking=True,
     )
 
     decision_user_id = fields.Many2one(
@@ -146,6 +152,7 @@ class OperationalRequest(models.Model):
         string='Additional Charges',
         currency_field='currency_id',
         default=0.0,
+        tracking=True,
     )
     amount_total = fields.Monetary(
         string='Total',
@@ -153,6 +160,7 @@ class OperationalRequest(models.Model):
         compute='_compute_amounts',
         inverse='_inverse_amount_total',
         store=True,
+        tracking=True,
     )
 
    
@@ -295,6 +303,14 @@ class OperationalRequest(models.Model):
             'decision_date': fields.Datetime.now(),
             'rejection_reason': reason,
         })
+        for request in self:
+            request.message_post(
+                body=Markup("%(label)s %(reason)s") % {
+                    'label': _("Rejected. Reason:"),
+                    'reason': reason,
+                },
+                subtype_xmlid='mail.mt_note',
+            )
 
     def _open_approval_wizard(self, decision):
         self._check_can_decide()  # fail early instead of showing a useless modal

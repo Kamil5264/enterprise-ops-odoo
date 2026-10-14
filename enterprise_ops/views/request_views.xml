@@ -104,6 +104,7 @@
                         <field name="amount_total"/>
                     </group>
                 </sheet>
+                 <chatter/>
             </form>
         </field>
     </record>
