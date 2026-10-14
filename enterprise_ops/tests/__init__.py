@@ -6,3 +6,4 @@ from . import test_request_security
 from . import test_request_record_rules
 from . import test_multicompany
 from . import test_request_reminders
+from . import test_request_automation

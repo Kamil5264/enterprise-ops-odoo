@@ -245,6 +245,8 @@ class OperationalRequest(models.Model):
             ))
 
         self.write({'state':target_state,**(extra_vals or {})})
+        if target_state in self._REMINDER_CLOSING_STATES:
+            self._close_obsolete_reminders()
 
 
     def action_submit(self):
@@ -394,6 +396,26 @@ class OperationalRequest(models.Model):
         )
         self.last_reminder_date = fields.Datetime.now()
         return True
+    
+
+    _REMINDER_CLOSING_STATES = ('approved', 'rejected', 'cancelled')
+
+    def _close_obsolete_reminders(self):
+
+       
+        activity_type = self.env.ref(
+            'enterprise_ops.mail_activity_type_approval_reminder'
+        )
+        decided = self.filtered(lambda r: r.state != 'submitted')
+        reminders = decided.sudo().activity_ids.filtered(
+            lambda a: a.activity_type_id == activity_type
+        )
+        if reminders:
+            reminders.action_feedback(feedback=_(
+                "Closed automatically: the request is no longer "
+                "waiting for approval."
+            ))
+        return len(reminders)
 
     
 
