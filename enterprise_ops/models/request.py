@@ -163,6 +163,12 @@ class OperationalRequest(models.Model):
         tracking=True,
     )
 
+    attachment_count = fields.Integer(
+        string = 'Document',
+        compute = '_compute_attachment_count'
+
+    )
+
    
 
     @api.depends('line_ids.subtotal', 'amount_additional_charges')
@@ -348,6 +354,7 @@ class OperationalRequest(models.Model):
     _REMINDER_REPEAT_DAYS = 3 
 
 
+
     @api.model
     def _cron_remind_stale_approvals(self):
         now = fields.Datetime.now()
@@ -432,6 +439,37 @@ class OperationalRequest(models.Model):
                 "waiting for approval."
             ))
         return len(reminders)
+
+
+    def _compute_attachment_count(self):
+        # One grouped query for the whole recordset (no N+1). ir.attachment
+        # applies its own access filter, so the count respects T12/T13.
+        groups = self.env['ir.attachment']._read_group(
+            [('res_model', '=', self._name), ('res_id', 'in', self.ids)],
+            groupby=['res_id'],
+            aggregates=['__count'],
+        )
+        counts = dict(groups)
+        for request in self:
+            request.attachment_count = counts.get(request.id, 0)
+
+    def action_view_attachments(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Documents'),
+            'res_model': 'ir.attachment',
+            'view_mode': 'list,form',
+            'domain': [('res_model', '=', self._name), ('res_id', '=', self.id)],
+            'context': {
+                'default_res_model': self._name,
+                'default_res_id': self.id,
+            },
+        }
+
+
+    
+
 
     
 
