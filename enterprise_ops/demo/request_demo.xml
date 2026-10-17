@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Each scenario is built through the REAL workflow methods (functions
+         run as the system user), so chatter history, tracking, sequence and
+         submitted_date are all genuine. Afterwards the decision fields are
+         rewritten to the real approver: otherwise they would read OdooBot.
+         Chatter authorship stays OdooBot (honest limitation of data files).
+         "Products" are plain text lines until T21 introduces product.product. -->
+
+    <!-- ===== 1. DRAFT (Maintenance, Fatima) ===== -->
+    <record id="demo_req_draft" model="enterprise.ops.request">
+        <field name="employee_id" ref="demo_user_fatima"/>
+        <field name="department_id" ref="demo_dept_maintenance"/>
+        <field name="priority">0</field>
+        <field name="request_date" eval="(DateTime.today() - timedelta(days=1)).strftime('%Y-%m-%d')"/>
+        <field name="reason">Replace worn PPE for the maintenance crew before the next shutdown.</field>
+        <field name="line_ids" eval="[
+            (0, 0, {'product_name': 'Safety helmet', 'quantity': 20, 'estimated_unit_price': 12.5}),
+            (0, 0, {'product_name': 'Protective gloves (pair)', 'quantity': 40, 'estimated_unit_price': 4.0, 'notes': 'Cut-resistant, size L'}),
+        ]"/>
+    </record>
+
+    <!-- ===== 2. SUBMITTED, waiting (IT, Yusuf) ===== -->
+    <record id="demo_req_submitted" model="enterprise.ops.request">
+        <field name="employee_id" ref="demo_user_yusuf"/>
+        <field name="department_id" ref="demo_dept_it"/>
+        <field name="priority">1</field>
+        <field name="request_date" eval="(DateTime.today() - timedelta(days=1)).strftime('%Y-%m-%d')"/>
+        <field name="reason">Two engineers join next month and need workstations.</field>
+        <field name="line_ids" eval="[
+            (0, 0, {'product_name': 'Laptop 15 inch', 'quantity': 2, 'estimated_unit_price': 950.0}),
+            (0, 0, {'product_name': 'Docking station', 'quantity': 2, 'estimated_unit_price': 120.0}),
+        ]"/>
+    </record>
+    <function model="enterprise.ops.request" name="action_submit"
+              eval="[[ref('demo_req_submitted')]]"/>
+
+    <!-- ===== 3. SUBMITTED, STALE: run the T16 cron to see the reminder ===== -->
+    <record id="demo_req_stale" model="enterprise.ops.request">
+        <field name="employee_id" ref="demo_user_fatima"/>
+        <field name="department_id" ref="demo_dept_maintenance"/>
+        <field name="priority">2</field>
+        <field name="request_date" eval="(DateTime.today() - timedelta(days=6)).strftime('%Y-%m-%d')"/>
+        <field name="reason">Cooling pump P-102 seal failure: spare seal kits are needed to avoid downtime.</field>
+        <field name="line_ids" eval="[
+            (0, 0, {'product_name': 'Mechanical seal kit', 'quantity': 3, 'estimated_unit_price': 780.0}),
+            (0, 0, {'product_name': 'Gasket set', 'quantity': 3, 'estimated_unit_price': 45.0}),
+        ]"/>
+    </record>
+    <function model="enterprise.ops.request" name="action_submit"
+              eval="[[ref('demo_req_stale')]]"/>
+    <record id="demo_req_stale" model="enterprise.ops.request">
+        <field name="submitted_date" eval="(DateTime.now() - timedelta(days=5)).strftime('%Y-%m-%d %H:%M:%S')"/>
+    </record>
+
+    <!-- ===== 4. APPROVED (IT, Yusuf; approved by Omar) ===== -->
+    <record id="demo_req_approved" model="enterprise.ops.request">
+        <field name="employee_id" ref="demo_user_yusuf"/>
+        <field name="department_id" ref="demo_dept_it"/>
+        <field name="priority">0</field>
+        <field name="request_date" eval="(DateTime.today() - timedelta(days=4)).strftime('%Y-%m-%d')"/>
+        <field name="reason">Ergonomic chairs for the new control room desks.</field>
+        <field name="line_ids" eval="[
+            (0, 0, {'product_name': 'Ergonomic office chair', 'quantity': 6, 'estimated_unit_price': 210.0}),
+        ]"/>
+    </record>
+    <function model="enterprise.ops.request" name="action_submit"
+              eval="[[ref('demo_req_approved')]]"/>
+    <function model="enterprise.ops.request" name="action_approve"
+              eval="[[ref('demo_req_approved')]]"/>
+    <record id="demo_req_approved" model="enterprise.ops.request">
+        <field name="decision_user_id" ref="demo_user_omar"/>
+        <field name="decision_date" eval="(DateTime.now() - timedelta(days=2)).strftime('%Y-%m-%d %H:%M:%S')"/>
+    </record>
+
+    <!-- ===== 5. REJECTED with a reason (Maintenance, Fatima; by Layla) ===== -->
+    <record id="demo_req_rejected" model="enterprise.ops.request">
+        <field name="employee_id" ref="demo_user_fatima"/>
+        <field name="department_id" ref="demo_dept_maintenance"/>
+        <field name="priority">0</field>
+        <field name="request_date" eval="(DateTime.today() - timedelta(days=5)).strftime('%Y-%m-%d')"/>
+        <field name="reason">Annual stock of premium lubricants.</field>
+        <field name="line_ids" eval="[
+            (0, 0, {'product_name': 'Synthetic gear oil, 20 L drum', 'quantity': 10, 'estimated_unit_price': 310.0}),
+        ]"/>
+    </record>
+    <function model="enterprise.ops.request" name="action_submit"
+              eval="[[ref('demo_req_rejected')]]"/>
+    <function model="enterprise.ops.request" name="action_reject"
+              eval="[[ref('demo_req_rejected')], 'Exceeds the Q4 budget. Please resubmit with a lower-cost alternative.']"/>
+    <record id="demo_req_rejected" model="enterprise.ops.request">
+        <field name="decision_user_id" ref="demo_user_layla"/>
+        <field name="decision_date" eval="(DateTime.now() - timedelta(days=3)).strftime('%Y-%m-%d %H:%M:%S')"/>
+    </record>
+
+    <!-- ===== 6. PROCUREMENT, with additional charges (IT, Yusuf; by Omar) ===== -->
+    <record id="demo_req_procurement" model="enterprise.ops.request">
+        <field name="employee_id" ref="demo_user_yusuf"/>
+        <field name="department_id" ref="demo_dept_it"/>
+        <field name="priority">1</field>
+        <field name="request_date" eval="(DateTime.today() - timedelta(days=8)).strftime('%Y-%m-%d')"/>
+        <field name="reason">Core switch replacement for the server room.</field>
+        <field name="amount_additional_charges">150.0</field>
+        <field name="line_ids" eval="[
+            (0, 0, {'product_name': '24-port managed switch', 'quantity': 2, 'estimated_unit_price': 1400.0}),
+            (0, 0, {'product_name': 'SFP+ transceiver module', 'quantity': 4, 'estimated_unit_price': 95.0, 'notes': 'Estimated freight is in Additional Charges'}),
+        ]"/>
+    </record>
+    <function model="enterprise.ops.request" name="action_submit"
+              eval="[[ref('demo_req_procurement')]]"/>
+    <function model="enterprise.ops.request" name="action_approve"
+              eval="[[ref('demo_req_procurement')]]"/>
+    <function model="enterprise.ops.request" name="action_send_to_procurement"
+              eval="[[ref('demo_req_procurement')]]"/>
+    <record id="demo_req_procurement" model="enterprise.ops.request">
+        <field name="decision_user_id" ref="demo_user_omar"/>
+        <field name="decision_date" eval="(DateTime.now() - timedelta(days=4)).strftime('%Y-%m-%d %H:%M:%S')"/>
+    </record>
+
+    <!-- ===== 7. DONE (Maintenance, Fatima; by Layla) ===== -->
+    <record id="demo_req_done" model="enterprise.ops.request">
+        <field name="employee_id" ref="demo_user_fatima"/>
+        <field name="department_id" ref="demo_dept_maintenance"/>
+        <field name="priority">0</field>
+        <field name="request_date" eval="(DateTime.today() - timedelta(days=15)).strftime('%Y-%m-%d')"/>
+        <field name="reason">Hydraulic hoses for forklift maintenance.</field>
+        <field name="line_ids" eval="[
+            (0, 0, {'product_name': 'Hydraulic hose assembly', 'quantity': 8, 'estimated_unit_price': 55.0}),
+            (0, 0, {'product_name': 'Fittings kit', 'quantity': 2, 'estimated_unit_price': 40.0}),
+        ]"/>
+    </record>
+    <function model="enterprise.ops.request" name="action_submit"
+              eval="[[ref('demo_req_done')]]"/>
+    <function model="enterprise.ops.request" name="action_approve"
+              eval="[[ref('demo_req_done')]]"/>
+    <function model="enterprise.ops.request" name="action_send_to_procurement"
+              eval="[[ref('demo_req_done')]]"/>
+    <function model="enterprise.ops.request" name="action_done"
+              eval="[[ref('demo_req_done')]]"/>
+    <record id="demo_req_done" model="enterprise.ops.request">
+        <field name="decision_user_id" ref="demo_user_layla"/>
+        <field name="decision_date" eval="(DateTime.now() - timedelta(days=12)).strftime('%Y-%m-%d %H:%M:%S')"/>
+    </record>
+
+    <!-- ===== 8. CANCELLED (IT, Yusuf) ===== -->
+    <record id="demo_req_cancelled" model="enterprise.ops.request">
+        <field name="employee_id" ref="demo_user_yusuf"/>
+        <field name="department_id" ref="demo_dept_it"/>
+        <field name="priority">0</field>
+        <field name="request_date" eval="(DateTime.today() - timedelta(days=9)).strftime('%Y-%m-%d')"/>
+        <field name="reason">Replacement monitors, no longer needed after the office move was postponed.</field>
+        <field name="line_ids" eval="[
+            (0, 0, {'product_name': '27 inch monitor', 'quantity': 4, 'estimated_unit_price': 280.0}),
+        ]"/>
+    </record>
+    <function model="enterprise.ops.request" name="action_submit"
+              eval="[[ref('demo_req_cancelled')]]"/>
+    <function model="enterprise.ops.request" name="action_cancel"
+              eval="[[ref('demo_req_cancelled')]]"/>
+</odoo>

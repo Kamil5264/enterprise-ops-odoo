@@ -42,7 +42,16 @@ Odoo application covering:
     'wizard/views.xml',
     'views/menu.xml',
     'views/master_data_views.xml',
-],
+    ],
+
+    'demo': [
+        'demo/res_users_demo.xml',
+        'demo/enterprise.ops.operating.unit.csv',
+        'demo/enterprise.ops.department.csv',
+        'demo/request_demo.xml',
+    ],
+
+
 
     # Behaviour flags
     "installable": True,

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+
+    <record id="demo_user_fatima" model="res.users" context="{'no_reset_password': True}">
+        <field name="name">Fatima Hassan</field>
+        <field name="login">demo.employee1</field>
+        <field name="password">demo.employee1</field>
+        <field name="email">fatima.hassan@example.com</field>
+        <field name="group_ids" eval="[(6, 0, [
+            ref('base.group_user'), ref('group_employee'),
+        ])]"/>
+    </record>
+
+    <record id="demo_user_yusuf" model="res.users" context="{'no_reset_password': True}">
+        <field name="name">Yusuf Karim</field>
+        <field name="login">demo.employee2</field>
+        <field name="password">demo.employee2</field>
+        <field name="email">yusuf.karim@example.com</field>
+        <field name="group_ids" eval="[(6, 0, [
+            ref('base.group_user'), ref('group_employee'),
+        ])]"/>
+    </record>
+
+    <record id="demo_user_layla" model="res.users" context="{'no_reset_password': True}">
+        <field name="name">Layla Nasser</field>
+        <field name="login">demo.manager1</field>
+        <field name="password">demo.manager1</field>
+        <field name="email">layla.nasser@example.com</field>
+        <field name="group_ids" eval="[(6, 0, [
+            ref('base.group_user'), ref('group_employee'), ref('group_manager'),
+        ])]"/>
+    </record>
+
+    <record id="demo_user_omar" model="res.users" context="{'no_reset_password': True}">
+        <field name="name">Omar Farouk</field>
+        <field name="login">demo.manager2</field>
+        <field name="password">demo.manager2</field>
+        <field name="email">omar.farouk@example.com</field>
+        <field name="group_ids" eval="[(6, 0, [
+            ref('base.group_user'), ref('group_employee'), ref('group_manager'),
+        ])]"/>
+    </record>
+
+    <record id="demo_user_khalid" model="res.users" context="{'no_reset_password': True}">
+        <field name="name">Khalid Mansour</field>
+        <field name="login">demo.procurement</field>
+        <field name="password">demo.procurement</field>
+        <field name="email">khalid.mansour@example.com</field>
+        <field name="group_ids" eval="[(6, 0, [
+            ref('base.group_user'), ref('group_procurement'),
+        ])]"/>
+    </record>
+
+    <record id="demo_user_nadia" model="res.users" context="{'no_reset_password': True}">
+        <field name="name">Nadia Saleh</field>
+        <field name="login">demo.finance</field>
+        <field name="password">demo.finance</field>
+        <field name="email">nadia.saleh@example.com</field>
+        <field name="group_ids" eval="[(6, 0, [
+            ref('base.group_user'), ref('group_finance'),
+        ])]"/>
+    </record>
+</odoo>

@@ -1,0 +1,4 @@
+id,name,code,company_id/id
+demo_ou_plant,Main Plant,OU-PLANT,base.main_company
+demo_ou_warehouse,Central Warehouse,OU-WH,base.main_company
+demo_ou_hq,Head Office,OU-HQ,base.main_company

@@ -8,3 +8,4 @@ from . import test_multicompany
 from . import test_request_reminders
 from . import test_request_automation
 from . import test_request_attachments
+from . import test_demo_data
