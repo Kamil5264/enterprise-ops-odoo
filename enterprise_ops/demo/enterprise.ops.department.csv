@@ -1,0 +1,5 @@
+id,name,code,company_id/id,manager_id/id
+demo_dept_maintenance,Maintenance,MNT,base.main_company,demo_user_layla
+demo_dept_it,Information Technology,ITD,base.main_company,demo_user_omar
+demo_dept_procurement,Procurement,PRC,base.main_company,
+demo_dept_finance,Finance,FIN,base.main_company,
