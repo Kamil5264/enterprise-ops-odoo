@@ -96,8 +96,12 @@
                         <field name = "line_ids"> 
                            <list editable = "bottom"> 
                            <field name = "sequence" widget = "handle"/> 
+                        <field name="product_id"
+                                           domain="[('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"
+                                           options="{'no_create': True}"/>
                            <field name = "product_name"/>
                            <field name = "quantity"/>
+                           <field name="uom_id"/>
                            <field name = "estimated_unit_price"/>
                            <field name = "notes"/>
                            <field name = "currency_id" column_visible = "1"/>

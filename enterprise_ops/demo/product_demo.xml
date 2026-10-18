@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Products used by the demo requests. company_id is left empty, so
+         they are shared across companies. -->
+    <record id="demo_product_helmet" model="product.product">
+        <field name="name">Safety helmet</field>
+        <field name="default_code">PPE-001</field>
+    </record>
+    <record id="demo_product_gloves" model="product.product">
+        <field name="name">Protective gloves (pair)</field>
+        <field name="default_code">PPE-002</field>
+    </record>
+    <record id="demo_product_laptop" model="product.product">
+        <field name="name">Laptop 15 inch</field>
+        <field name="default_code">IT-001</field>
+    </record>
+    <record id="demo_product_dock" model="product.product">
+        <field name="name">Docking station</field>
+        <field name="default_code">IT-002</field>
+    </record>
+    <record id="demo_product_monitor" model="product.product">
+        <field name="name">27 inch monitor</field>
+        <field name="default_code">IT-003</field>
+    </record>
+    <record id="demo_product_seal_kit" model="product.product">
+        <field name="name">Mechanical seal kit</field>
+        <field name="default_code">MNT-001</field>
+    </record>
+    <record id="demo_product_gasket" model="product.product">
+        <field name="name">Gasket set</field>
+        <field name="default_code">MNT-002</field>
+    </record>
+    <record id="demo_product_gear_oil" model="product.product">
+        <field name="name">Synthetic gear oil, 20 L drum</field>
+        <field name="default_code">MNT-003</field>
+    </record>
+    <record id="demo_product_hose" model="product.product">
+        <field name="name">Hydraulic hose assembly</field>
+        <field name="default_code">MNT-004</field>
+    </record>
+    <record id="demo_product_fittings" model="product.product">
+        <field name="name">Fittings kit</field>
+        <field name="default_code">MNT-005</field>
+    </record>
+    <record id="demo_product_chair" model="product.product">
+        <field name="name">Ergonomic office chair</field>
+        <field name="default_code">OFF-001</field>
+    </record>
+    <record id="demo_product_switch" model="product.product">
+        <field name="name">24-port managed switch</field>
+        <field name="default_code">NET-001</field>
+    </record>
+    <record id="demo_product_sfp" model="product.product">
+        <field name="name">SFP+ transceiver module</field>
+        <field name="default_code">NET-002</field>
+    </record>
+</odoo>
