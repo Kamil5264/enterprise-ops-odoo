@@ -15,8 +15,8 @@
         <field name="request_date" eval="(DateTime.today() - timedelta(days=1)).strftime('%Y-%m-%d')"/>
         <field name="reason">Replace worn PPE for the maintenance crew before the next shutdown.</field>
         <field name="line_ids" eval="[
-            (0, 0, {'product_name': 'Safety helmet', 'quantity': 20, 'estimated_unit_price': 12.5}),
-            (0, 0, {'product_name': 'Protective gloves (pair)', 'quantity': 40, 'estimated_unit_price': 4.0, 'notes': 'Cut-resistant, size L'}),
+            (0, 0, {'product_id': ref('demo_product_helmet'), 'quantity': 20, 'estimated_unit_price': 12.5}),
+            (0, 0, {'product_id': ref('demo_product_gloves'), 'quantity': 40, 'estimated_unit_price': 4.0, 'notes': 'Cut-resistant, size L'}),
         ]"/>
     </record>
 
@@ -28,8 +28,8 @@
         <field name="request_date" eval="(DateTime.today() - timedelta(days=1)).strftime('%Y-%m-%d')"/>
         <field name="reason">Two engineers join next month and need workstations.</field>
         <field name="line_ids" eval="[
-            (0, 0, {'product_name': 'Laptop 15 inch', 'quantity': 2, 'estimated_unit_price': 950.0}),
-            (0, 0, {'product_name': 'Docking station', 'quantity': 2, 'estimated_unit_price': 120.0}),
+            (0, 0, {'product_id': ref('demo_product_helmet'), 'quantity': 2, 'estimated_unit_price': 950.0}),
+            (0, 0, {'product_id': ref('demo_product_dock'), 'quantity': 2, 'estimated_unit_price': 120.0}),
         ]"/>
     </record>
     <function model="enterprise.ops.request" name="action_submit"
@@ -43,8 +43,8 @@
         <field name="request_date" eval="(DateTime.today() - timedelta(days=6)).strftime('%Y-%m-%d')"/>
         <field name="reason">Cooling pump P-102 seal failure: spare seal kits are needed to avoid downtime.</field>
         <field name="line_ids" eval="[
-            (0, 0, {'product_name': 'Mechanical seal kit', 'quantity': 3, 'estimated_unit_price': 780.0}),
-            (0, 0, {'product_name': 'Gasket set', 'quantity': 3, 'estimated_unit_price': 45.0}),
+            (0, 0, {'product_id': ref('demo_product_seal_kit'), 'quantity': 3, 'estimated_unit_price': 780.0}),
+            (0, 0, {'product_id': ref('demo_product_gasket'), 'quantity': 3, 'estimated_unit_price': 45.0}),
         ]"/>
     </record>
     <function model="enterprise.ops.request" name="action_submit"
@@ -61,7 +61,7 @@
         <field name="request_date" eval="(DateTime.today() - timedelta(days=4)).strftime('%Y-%m-%d')"/>
         <field name="reason">Ergonomic chairs for the new control room desks.</field>
         <field name="line_ids" eval="[
-            (0, 0, {'product_name': 'Ergonomic office chair', 'quantity': 6, 'estimated_unit_price': 210.0}),
+            (0, 0, {'product_id': ref('demo_product_chair'), 'quantity': 6, 'estimated_unit_price': 210.0}),
         ]"/>
     </record>
     <function model="enterprise.ops.request" name="action_submit"
@@ -81,7 +81,7 @@
         <field name="request_date" eval="(DateTime.today() - timedelta(days=5)).strftime('%Y-%m-%d')"/>
         <field name="reason">Annual stock of premium lubricants.</field>
         <field name="line_ids" eval="[
-            (0, 0, {'product_name': 'Synthetic gear oil, 20 L drum', 'quantity': 10, 'estimated_unit_price': 310.0}),
+            (0, 0, {'product_id': ref('demo_product_gear_oil'), 'quantity': 10, 'estimated_unit_price': 310.0}),
         ]"/>
     </record>
     <function model="enterprise.ops.request" name="action_submit"
@@ -102,8 +102,8 @@
         <field name="reason">Core switch replacement for the server room.</field>
         <field name="amount_additional_charges">150.0</field>
         <field name="line_ids" eval="[
-            (0, 0, {'product_name': '24-port managed switch', 'quantity': 2, 'estimated_unit_price': 1400.0}),
-            (0, 0, {'product_name': 'SFP+ transceiver module', 'quantity': 4, 'estimated_unit_price': 95.0, 'notes': 'Estimated freight is in Additional Charges'}),
+            (0, 0, {'product_id': ref('demo_product_switch'), 'quantity': 2, 'estimated_unit_price': 1400.0}),
+            (0, 0, {'product_id': ref('demo_product_sfp'), 'quantity': 4, 'estimated_unit_price': 95.0, 'notes': 'Estimated freight is in Additional Charges'}),
         ]"/>
     </record>
     <function model="enterprise.ops.request" name="action_submit"
@@ -125,8 +125,8 @@
         <field name="request_date" eval="(DateTime.today() - timedelta(days=15)).strftime('%Y-%m-%d')"/>
         <field name="reason">Hydraulic hoses for forklift maintenance.</field>
         <field name="line_ids" eval="[
-            (0, 0, {'product_name': 'Hydraulic hose assembly', 'quantity': 8, 'estimated_unit_price': 55.0}),
-            (0, 0, {'product_name': 'Fittings kit', 'quantity': 2, 'estimated_unit_price': 40.0}),
+            (0, 0, {'product_id': ref('demo_product_hose'), 'quantity': 8, 'estimated_unit_price': 55.0}),
+            (0, 0, {'product_id': ref('demo_product_fittings'), 'quantity': 2, 'estimated_unit_price': 40.0}),
         ]"/>
     </record>
     <function model="enterprise.ops.request" name="action_submit"
@@ -150,7 +150,7 @@
         <field name="request_date" eval="(DateTime.today() - timedelta(days=9)).strftime('%Y-%m-%d')"/>
         <field name="reason">Replacement monitors, no longer needed after the office move was postponed.</field>
         <field name="line_ids" eval="[
-            (0, 0, {'product_name': '27 inch monitor', 'quantity': 4, 'estimated_unit_price': 280.0}),
+            (0, 0, {'product_id': ref('demo_product_monitor'), 'quantity': 4, 'estimated_unit_price': 280.0}),
         ]"/>
     </record>
     <function model="enterprise.ops.request" name="action_submit"

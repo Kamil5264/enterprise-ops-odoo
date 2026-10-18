@@ -113,3 +113,9 @@ class TestDemoData(TransactionCase):
     def test_fresh_submitted_request_is_not_stale(self):
         self.env['enterprise.ops.request']._cron_remind_stale_approvals()
         self.assertFalse(self._req('demo_req_submitted').activity_ids)
+
+    def test_every_demo_line_uses_product_master_data(self):
+        for name in self.EXPECTED_STATES:
+            for line in self._req(name).line_ids:
+                self.assertTrue(line.product_id, name)
+                self.assertEqual(line.uom_id, line.product_id.uom_id, name)

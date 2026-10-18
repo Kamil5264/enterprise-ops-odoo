@@ -27,7 +27,7 @@ Odoo application covering:
 
     # Dependencies
     "depends": [
-        "base","mail"
+        "base","mail","product"
     ],
 
     # Data files loaded on install/update

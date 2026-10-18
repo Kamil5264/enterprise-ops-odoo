@@ -20,13 +20,32 @@ class OperationalRequestLine(models.Model):
         string = 'Sequence',
         default = 10
     )
-     # Simple text description for now. later we will replaces this with a
-    # proper product_id (product.product) + uom_id link.
+    product_id = fields.Many2one(
+        comodel_name = 'product.product',
+        string = 'Product',
+        required = True,
+        index = True,
+        domain = "[('purchase_ok','=',True)]",
+    )
 
     product_name = fields.Char(
-        string = 'Product/Service',
+        string='Description',
+        compute = '_compute_product_name',
+        store = True,
+        readonly = True,
+        precompute = True,
         required = True
     )
+
+    uom_id = fields.Many2one(
+        comodel_name='uom.uom',
+        string='Unit of Measure',
+        compute='_compute_uom_id',
+        store=True,
+        readonly=True,
+        precompute=True,
+    )
+
 
     quantity = fields.Integer(
         string  = 'Quantity',
@@ -77,6 +96,20 @@ class OperationalRequestLine(models.Model):
                 'message': _('Estimated unit price cannot be negative.'),
             }}
 
+    @api.depends('product_id')
+    def _compute_product_name(self):
+        for line in self:
+            if line.product_id:
+                line.product_name = line.product_id.display_name
+
+ 
+    @api.depends('product_id')
+    def _compute_uom_id(self):
+        for line in self:
+            line.uom_id = line.product_id.uom_id
+
+    
+
     # ------------------------------------------------------------------
     # Server-side constraints
     # ------------------------------------------------------------------
@@ -96,6 +129,26 @@ class OperationalRequestLine(models.Model):
                 raise ValidationError(_(
                     "Estimated unit price cannot be negative (line: %(product)s).",
                     product=line.product_name,
+                ))
+
+    @api.constrains('product_id')
+    def _check_product_allowed(self):
+        # The view domain is only UX; this is the real enforcement.
+        for line in self:
+            product = line.product_id
+            if not product.purchase_ok:
+                raise ValidationError(_(
+                    "Product '%(product)s' cannot be purchased.",
+                    product=product.display_name,
+                ))
+            company = line.request_id.company_id
+            if product.company_id and product.company_id != company:
+                raise ValidationError(_(
+                    "Product '%(product)s' belongs to company '%(product_company)s', "
+                    "not to this request's company '%(company)s'.",
+                    product=product.display_name,
+                    product_company=product.company_id.name,
+                    company=company.name,
                 ))
 
 
