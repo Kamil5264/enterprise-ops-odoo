@@ -50,6 +50,21 @@ class OperationalRequest(models.Model):
         tracking=True,
 
     )
+
+    purchase_order_ids = fields.One2many(
+        comodel_name='purchase.order',
+        inverse_name = 'request_id',
+        string = 'RFQs/ Purchase Order',
+        copy = False,
+        groups  = 'purchase.group_purchase_user'
+
+    )
+
+    purchase_count = fields.Integer(
+        string = 'RfQs/Orders',
+        compute = '_compute_purchase_count',
+        groups = 'purchase.group_purchase_user'
+    )
    
 
     # ------------------------------------------------------------------
@@ -468,22 +483,86 @@ class OperationalRequest(models.Model):
         }
 
 
-    
+    def _compute_purchase_count(self):
+        groups = self.env['purchase.order']._read_group(
+            [('request_id', 'in', self.ids)],
+            groupby=['request_id'],
+            aggregates=['__count'],
+        )
+        # groupby on a Many2one yields records as keys
+        counts = {record.id: count for record, count in groups}
+        for request in self:
+            request.purchase_count = counts.get(request.id, 0)
 
+    def action_view_purchase_orders(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('RFQs / Purchase Orders'),
+            'res_model': 'purchase.order',
+            'view_mode': 'list,form',
+            'domain': [('request_id', '=', self.id)],
+        }
 
-    
+    def _check_can_create_rfq(self):
+        if not self.env.su:
+            user = self.env.user
+            if not (user.has_group('enterprise_ops.group_procurement')
+                    or user.has_group('enterprise_ops.group_admin')):
+                raise AccessError(_("Only procurement can create RFQs."))
+        not_ready = self.filtered(lambda r: r.state != 'procurement')
+        if not_ready:
+            raise UserError(_(
+                "RFQs can only be created from requests in procurement: %(names)s.",
+                names=', '.join(not_ready.mapped('display_name')),
+            ))
 
+    def action_create_rfq(self):
+        self.ensure_one()
+        self._check_can_create_rfq()  # fail early, before showing the modal
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Create RFQ'),
+            'res_model': 'enterprise.ops.request.rfq',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_request_id': self.id},
+        }
 
-
-
-                    
-        
-
-
-    
-
-    
-
-    
-
+    def _create_rfq(self, partner):
+        """Create a draft RFQ for this request. Authority lives here (not
+        in the wizard), so it holds for any caller."""
+        self.ensure_one()
+        self._check_can_create_rfq()
+        outdated = self.line_ids.filtered(
+            lambda l: l.uom_id != l.product_id.uom_id
+        )
+        if outdated:
+            raise UserError(_(
+                "The unit of measure of these products changed after the "
+                "request was made: %(products)s. Please review the request.",
+                products=', '.join(outdated.mapped('product_name')),
+            ))
+        # Price is deliberately not passed: the estimate is the requester's
+        # budget guide; Odoo purchase derives the real price from the vendor.
+        order = self.env['purchase.order'].with_company(self.company_id).create({
+            'partner_id': partner.id,
+            'company_id': self.company_id.id,
+            'origin': self.name,
+            'request_id': self.id,
+            'order_line': [(0, 0, {
+                'product_id': line.product_id.id,
+                'name': line.product_name,
+                'product_qty': line.quantity,
+                'request_line_id': line.id,
+            }) for line in self.line_ids],
+        })
+        self.message_post(
+            body=Markup("%(label)s %(order)s") % {
+                'label': _("RFQ created:"),
+                'order': order.name,
+            },
+            subtype_xmlid='mail.mt_note',
+        )
+        return order
     

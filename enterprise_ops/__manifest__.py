@@ -27,7 +27,7 @@ Odoo application covering:
 
     # Dependencies
     "depends": [
-        "base","mail","product"
+        "base","mail","product","purchase",
     ],
 
     # Data files loaded on install/update
@@ -39,6 +39,7 @@ Odoo application covering:
     'data/server_actions.xml',
     'views/request_search.xml',
     'views/request_views.xml',
+    'views/purchase_views.xml',
     'wizard/views.xml',
     'views/menu.xml',
     'views/master_data_views.xml',

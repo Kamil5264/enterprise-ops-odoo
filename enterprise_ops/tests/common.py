@@ -10,3 +10,14 @@ def get_test_product(env):
         'name': 'Enterprise Ops Test Item',
         'default_code': 'ENT-OPS-TEST',
     })
+
+
+def with_implied(groups):
+    """Transitive closure over implied_ids: a user saved from the UI holds
+    its role plus everything the role implies (the ORM does not expand)."""
+    result = groups
+    todo = groups
+    while todo:
+        todo = todo.implied_ids - result
+        result |= todo
+    return result

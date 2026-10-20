@@ -47,6 +47,11 @@
                     <button name="action_send_to_procurement" type="object"
                             string="Send to Procurement" class="btn-primary"
                             invisible="state != 'approved'"/>
+                    <button name="action_create_rfq" type="object"
+                            string="Create RFQ" class="btn-primary"
+                            invisible="state != 'procurement'"
+                            groups="enterprise_ops.group_procurement,enterprise_ops.group_admin"/>
+                            
                     <button name="action_done" type="object" string="Mark Done"
                             class="btn-primary" invisible="state != 'procurement'"/>
                     <button name="action_cancel" type="object" string="Cancel"
@@ -64,6 +69,13 @@
                                 class="oe_stat_button" icon="fa-paperclip">
                             <field name="attachment_count" widget="statinfo"
                                    string="Documents"/>
+                        </button>
+                         <button name="action_view_purchase_orders" type="object"
+                                class="oe_stat_button" icon="fa-shopping-cart"
+                                groups="purchase.group_purchase_user"
+                                invisible="purchase_count == 0">
+                            <field name="purchase_count" widget="statinfo"
+                                   string="RFQs / Orders"/>
                         </button>
                     </div>
                     
