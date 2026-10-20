@@ -10,3 +10,4 @@ from . import test_request_automation
 from . import test_request_attachments
 from . import test_demo_data
 from . import test_request_line_products
+from . import test_request_purchase
