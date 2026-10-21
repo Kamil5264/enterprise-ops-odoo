@@ -21,6 +21,11 @@
                        decoration-warning="state == 'submitted'"
                        decoration-success="state == 'approved'"
                        decoration-danger="state == 'rejected'"/>
+
+                <field name="receipt_status" widget="badge" optional="hide"
+                       decoration-info="receipt_status == 'pending'"
+                       decoration-warning="receipt_status == 'partial'"
+                       decoration-success="receipt_status == 'full'"/>
                 <field name="company_id" groups="base.group_multi_company"/>
                  <field name="amount_total" sum="Total"/>
             </list>
@@ -51,6 +56,13 @@
                             string="Create RFQ" class="btn-primary"
                             invisible="state != 'procurement'"
                             groups="enterprise_ops.group_procurement,enterprise_ops.group_admin"/>
+                    <button name="action_view_receipts" type="object"
+                                class="oe_stat_button" icon="fa-truck"
+                                groups="stock.group_stock_user"
+                                invisible="picking_count == 0">
+                            <field name="picking_count" widget="statinfo"
+                                   string="Receipts"/>
+                        </button>
                             
                     <button name="action_done" type="object" string="Mark Done"
                             class="btn-primary" invisible="state != 'procurement'"/>
@@ -92,6 +104,11 @@
                         <group>
                             <field name="priority" widget="priority"/>
                             <field name="request_date"/>
+                            <field name="receipt_status" widget="badge"
+                                   decoration-info="receipt_status == 'pending'"
+                                   decoration-warning="receipt_status == 'partial'"
+                                   decoration-success="receipt_status == 'full'"
+                                   invisible="receipt_status == 'none'"/>
                         </group>
                     </group>
                     <group string="Reason">

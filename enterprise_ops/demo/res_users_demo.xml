@@ -62,4 +62,14 @@
             ref('base.group_user'), ref('group_finance'),
         ])]"/>
     </record>
+
+     <record id="demo_user_salma" model="res.users" context="{'no_reset_password': True}">
+        <field name="name">Salma Idris</field>
+        <field name="login">demo.warehouse</field>
+        <field name="password">demo.warehouse</field>
+        <field name="email">salma.idris@example.com</field>
+        <field name="group_ids" eval="[(6, 0, [
+            ref('base.group_user'), ref('stock.group_stock_user'),
+        ])]"/>
+    </record>
 </odoo>

@@ -119,3 +119,11 @@ class TestDemoData(TransactionCase):
             for line in self._req(name).line_ids:
                 self.assertTrue(line.product_id, name)
                 self.assertEqual(line.uom_id, line.product_id.uom_id, name)
+
+    def test_warehouse_demo_user_has_no_enterprise_ops_role(self):
+        user = self._user('demo_user_salma')
+        enterprise_groups = self.env['res.groups'].search([
+            ('privilege_id', '=', self.env.ref('enterprise_ops.privilege_enterprise_ops').id),
+        ])
+        self.assertFalse(user.group_ids & enterprise_groups)
+        self.assertIn(self.env.ref('stock.group_stock_user'), user.group_ids)
