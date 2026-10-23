@@ -5,3 +5,4 @@ from  . import request
 from . import request_line
 from . import purchase_integration
 from . import stock_integration
+from . import accounting_integration
