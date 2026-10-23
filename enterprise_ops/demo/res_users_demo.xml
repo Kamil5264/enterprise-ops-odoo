@@ -58,8 +58,9 @@
         <field name="login">demo.finance</field>
         <field name="password">demo.finance</field>
         <field name="email">nadia.saleh@example.com</field>
-        <field name="group_ids" eval="[(6, 0, [
+               <field name="group_ids" eval="[(6, 0, [
             ref('base.group_user'), ref('group_finance'),
+            ref('account.group_account_invoice'),
         ])]"/>
     </record>
 
