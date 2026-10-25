@@ -26,6 +26,14 @@
                        decoration-info="receipt_status == 'pending'"
                        decoration-warning="receipt_status == 'partial'"
                        decoration-success="receipt_status == 'full'"/>
+
+                <field name="payment_status" widget="badge" optional="hide"
+                       decoration-info="payment_status == 'unpaid'"
+                       decoration-warning="payment_status == 'partial'"
+                       decoration-success="payment_status == 'paid'"/>
+
+
+
                 <field name="company_id" groups="base.group_multi_company"/>
                  <field name="amount_total" sum="Total"/>
             </list>
@@ -120,6 +128,13 @@
                                    decoration-warning="receipt_status == 'partial'"
                                    decoration-success="receipt_status == 'full'"
                                    invisible="receipt_status == 'none'"/>
+
+                            <field name="payment_status" widget="badge"
+                                   decoration-info="payment_status == 'unpaid'"
+                                   decoration-warning="payment_status == 'partial'"
+                                   decoration-success="payment_status == 'paid'"
+                                   invisible="payment_status == 'none'"/>
+
                         </group>
                     </group>
                     <group string="Reason">
