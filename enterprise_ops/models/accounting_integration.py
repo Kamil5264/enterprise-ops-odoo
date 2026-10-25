@@ -11,6 +11,20 @@ class OperationalRequestAccounting(models.Model):
         groups = 'account.group_account_invoice'
     )
 
+
+    payment_status = fields.Selection(
+        selection=[
+            ('none','Nothing Billed'),
+            ('unpaid','Unpaid'),
+            ('partial','Partially Paid'),
+            ('paid','paid')
+        ],
+        string='Payment Status',
+        compute = '_compute_payment_status',
+    )
+
+
+
     @api.depends('purchase_order_ids.invoice_ids')
     def _compute_bill_count(self):
         orders = self.env['purchase.order'].sudo().search(
@@ -19,6 +33,38 @@ class OperationalRequestAccounting(models.Model):
         for request in self:
             request.bill_count = len(
                 orders.filtered(lambda o: o.request_id == request).invoice_ids
+            )
+
+
+    @api.model
+    def _payment_status_of(self, payment_states):
+       
+        relevant = [s for s in payment_states if s != 'reversed']
+        if not relevant:
+            return 'none'
+        if all(s in ('paid', 'in_payment') for s in relevant):
+            return 'paid'
+        if any(s in ('paid', 'in_payment', 'partial') for s in relevant):
+            return 'partial'
+        return 'unpaid'
+
+    @api.depends(
+        'purchase_order_ids.invoice_ids.state',
+        'purchase_order_ids.invoice_ids.payment_state',
+        'purchase_order_ids.invoice_ids.move_type',
+    )
+    def _compute_payment_status(self):
+        orders = self.env['purchase.order'].sudo().search(
+            [('request_id', 'in', self.ids)]
+        )
+        for request in self:
+            bills = orders.filtered(
+                lambda o: o.request_id == request
+            ).invoice_ids.filtered(
+                lambda b: b.move_type == 'in_invoice' and b.state == 'posted'
+            )
+            request.payment_status = self._payment_status_of(
+                bills.mapped('payment_state')
             )
 
 
