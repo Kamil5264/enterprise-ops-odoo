@@ -1,0 +1,4 @@
+request_key,employee_login,department_code,priority,request_date,reason,product_code,quantity,unit_price,notes
+R1,,MNT,normal,,Spare parts for cooling pump P-102,MNT-001,2,780.00,Seal kit
+R1,,,,,,MNT-002,2,45.00,
+R2,,ITD,high,2026-11-02,Workstation for a new engineer,IT-001,1,950.00,

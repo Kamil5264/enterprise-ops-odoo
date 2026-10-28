@@ -48,4 +48,50 @@
         </field>
     </record>
 
+        <record id="view_request_import_form" model="ir.ui.view">
+        <field name="name">enterprise.ops.request.import.form</field>
+        <field name="model">enterprise.ops.request.import</field>
+        <field name="arch" type="xml">
+            <form string="Import Requests">
+                <field name="state" invisible="1"/>
+                <div class="alert alert-info" role="alert" invisible="state == 'done'">
+                    <p>
+                        One row per request line. Rows with the same
+                        <strong>request_key</strong> form one request. Header
+                        columns are required on the first row of a request.
+                        If any row has a problem, <strong>nothing is imported</strong>
+                        and every problem is listed below. Imported requests
+                        are always drafts.
+                    </p>
+                    <a href="/enterprise_ops/static/files/request_import_template.csv"
+                       download="request_import_template.csv">Download the template</a>
+                </div>
+                <group invisible="state == 'done'">
+                    <field name="csv_file" filename="csv_filename"/>
+                    <field name="csv_filename" invisible="1"/>
+                </group>
+                <group invisible="not report">
+                    <field name="report" nolabel="1" readonly="1"/>
+                </group>
+                <footer>
+                    <button name="action_import" type="object" string="Import"
+                            class="btn-primary" invisible="state == 'done'"
+                            data-hotkey="q"/>
+                    <button name="action_open_requests" type="object"
+                            string="View Requests" class="btn-primary"
+                            invisible="state != 'done'"/>
+                    <button string="Close" class="btn-secondary"
+                            special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_request_import" model="ir.actions.act_window">
+        <field name="name">Import Requests</field>
+        <field name="res_model">enterprise.ops.request.import</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
 </odoo>

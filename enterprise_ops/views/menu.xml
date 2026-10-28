@@ -13,6 +13,15 @@
         sequence="10"
     />
 
+  <menuitem id="menu_enterprise_ops_import"
+              name="Import Requests"
+              parent="menu_enterprise_ops_root"
+              action="action_request_import"
+              sequence="20"
+              groups="enterprise_ops.group_employee,enterprise_ops.group_manager,enterprise_ops.group_admin"/>
+
+    
+
   <menuitem id="menu_enterprise_ops_requests"
             name="Requests"
             parent="menu_enterprise_ops_root"
