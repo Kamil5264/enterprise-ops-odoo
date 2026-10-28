@@ -23,3 +23,6 @@ access_request_approval_manager,enterprise.ops.request.approval.manager,model_en
 access_request_approval_admin,enterprise.ops.request.approval.admin,model_enterprise_ops_request_approval,group_admin,1,1,1,1
 access_request_rfq_procurement,enterprise.ops.request.rfq.procurement,model_enterprise_ops_request_rfq,group_procurement,1,1,1,1
 access_request_rfq_admin,enterprise.ops.request.rfq.admin,model_enterprise_ops_request_rfq,group_admin,1,1,1,1
+access_request_import_employee,enterprise.ops.request.import.employee,model_enterprise_ops_request_import,group_employee,1,1,1,1
+access_request_import_manager,enterprise.ops.request.import.manager,model_enterprise_ops_request_import,group_manager,1,1,1,1
+access_request_import_admin,enterprise.ops.request.import.admin,model_enterprise_ops_request_import,group_admin,1,1,1,1
